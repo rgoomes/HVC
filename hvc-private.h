@@ -23,6 +23,8 @@ typedef struct dlnode {
   int id;
   
   double oldvolume; //HVC-ONLY 4D-U-ADD 
+
+  int enabled;
   
 } dlnode_t;
 

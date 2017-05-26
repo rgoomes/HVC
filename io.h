@@ -13,11 +13,11 @@
 #endif
 
 void 
-errprintf(const char * template,...) 
+errprintf(const char * template_,...)
 /* enables the compiler to check the format string against the
    parameters */  __attribute__ ((format(printf, 1, 2)));
 
-void warnprintf(const char *template,...)
+void warnprintf(const char *template_,...)
 /* enables the compiler to check the format string against the
    parameters */  __attribute__ ((format(printf, 1, 2)));
 

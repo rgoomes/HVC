@@ -72,8 +72,13 @@ struct hvcstruct {
     int saved; //are the contributions saved in contribs vector?
 
     int ndom; // not fully implemented yet
-  
+
+    int * selected;
 }; 
+
+int *getSelected(hvc_s *hvcs){
+    return hvcs->selected;
+}
 
 /************** static functions **********************************/
 
@@ -90,6 +95,8 @@ static dlnode_t * newPoint(hvc_s * hvcs, double * point){
     p->id = hvcs->freeIds[hvcs->n];
         
     p = point2Struct(hvcs->list, p, point, hvcs->d);
+
+    p->enabled = 0;
 
     return p;
 }
@@ -122,6 +129,8 @@ static void saveContributions(hvc_s * hvcs){
             minContr = contribs[i];
             leastContrix = i;
         }
+
+        hvcs->selected[i] = p->enabled;
     }
     hvcs->leastContributorix = leastContrix;
     hvcs->saved = 1;
@@ -276,7 +285,9 @@ hvc_s * init(double * data, int d, int n, int naloc, double *ref){
         hvcs->ndom = ndom;
     }
     
-    
+    int * selected = (int *) malloc((naloc) * sizeof(int));
+    for(i = 0; i < naloc; i++) selected[i] = 0;
+    hvcs->selected = selected;
     
     return hvcs;
 }
@@ -292,6 +303,8 @@ double dealloc(hvc_s * hvcs){
     free(hvcs->freeIds);
     free(hvcs->points);
     free(hvcs->ref);
+
+    free(hvcs->selected);
     
     free(hvcs);
     return 0;
@@ -407,6 +420,74 @@ int removePoint(hvc_s * hvcs, double * point, int updateContribs){
     removePointNode(hvcs, epoint, updateContribs);
     return 1;
     
+}
+
+int disablePoint(hvc_s * hvcs, double * point){
+    dlnode_t * epoint = NULL;
+    int epointndom = -1;
+    int d = hvcs->d;
+    dlnode_t * list = hvcs->list;
+    dlnode_t * p = list->next[0];
+    int ndom = hvcs->ndom;
+
+    while(p != list && (epoint == NULL || ndom > 0)){
+        if(isequal(point, p->x, d) && p->ndomr > epointndom){
+            epoint = p;
+            epointndom = p->ndomr;
+        }
+        p = p->next[0];
+    }
+
+    if(epoint == NULL) return 0;
+
+    epoint->enabled = 0;
+    return 1;
+}
+
+int enablePoint(hvc_s * hvcs, double * point){
+    dlnode_t * epoint = NULL;
+    int epointndom = -1;
+    int d = hvcs->d;
+    dlnode_t * list = hvcs->list;
+    dlnode_t * p = list->next[0];
+    int ndom = hvcs->ndom;
+
+    while(p != list && (epoint == NULL || ndom > 0)){
+        if(isequal(point, p->x, d) && p->ndomr > epointndom){
+            epoint = p;
+            epointndom = p->ndomr;
+        }
+        p = p->next[0];
+    }
+
+    if(epoint == NULL) return 0;
+
+    epoint->enabled = 1;
+    return 1;
+}
+
+int findPointPos(hvc_s * hvcs, double * point){
+    dlnode_t * epoint = NULL;
+    int epointndom = -1;
+    int d = hvcs->d;
+    dlnode_t * list = hvcs->list;
+    dlnode_t * p = list->next[0];
+    int ndom = hvcs->ndom;
+    int pos = -1, i = 0;
+
+    while(p != list && (epoint == NULL || ndom > 0)){
+        if(isequal(point, p->x, d) && p->ndomr > epointndom){
+            epoint = p;
+            epointndom = p->ndomr;
+            pos = i;
+        }
+        p = p->next[0];
+        ++i;
+    }
+
+    if(epoint == NULL) return -1;
+
+    return pos;
 }
 
 void removeLeastContributor(hvc_s * hvcs, int updateContribs){

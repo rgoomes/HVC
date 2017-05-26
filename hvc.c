@@ -409,6 +409,10 @@ setup_cdllist(double * data, int naloc, int n, int d, double *ref)
     int di = d-1;
     
     dlnode_t * head = (dlnode_t *) malloc((naloc+3) * sizeof(dlnode_t));
+
+    for(dlnode_t *it = head; it != head + naloc+3; ++it)
+        it->enabled = 0;
+
     int i;
     dlnode_t * list = head;
     initSentinels(head, ref, d);

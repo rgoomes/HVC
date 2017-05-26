@@ -58,6 +58,12 @@ void forceRecomputationNext(hvc_s * hvcs); //O(1)
 /* -------- close function -------- */
 double dealloc(hvc_s * hvcs);
 
+/* ----------------------------------------- */
+int disablePoint(hvc_s * hvcs, double * point);
+int enablePoint(hvc_s * hvcs, double * point);
+int findPointPos(hvc_s * hvcs, double * point);
+int *getSelected(hvc_s * hvcs);
+
 
 /* -------- others --------*/
 // TODO
