@@ -423,71 +423,43 @@ int removePoint(hvc_s * hvcs, double * point, int updateContribs){
 }
 
 int disablePoint(hvc_s * hvcs, double * point){
-    dlnode_t * epoint = NULL;
-    int epointndom = -1;
-    int d = hvcs->d;
+    const int d = hvcs->d;
     dlnode_t * list = hvcs->list;
-    dlnode_t * p = list->next[0];
-    int ndom = hvcs->ndom;
 
-    while(p != list && (epoint == NULL || ndom > 0)){
-        if(isequal(point, p->x, d) && p->ndomr > epointndom){
-            epoint = p;
-            epointndom = p->ndomr;
+    for(dlnode_t * p = list->next[0]; p != list; p = p->next[0]){
+        if(isequal(point, p->x, d)){
+            p->enabled = 0;
+            return 1;
         }
-        p = p->next[0];
     }
 
-    if(epoint == NULL) return 0;
-
-    epoint->enabled = 0;
-    return 1;
+    return 0;
 }
 
 int enablePoint(hvc_s * hvcs, double * point){
-    dlnode_t * epoint = NULL;
-    int epointndom = -1;
-    int d = hvcs->d;
+    const int d = hvcs->d;
     dlnode_t * list = hvcs->list;
-    dlnode_t * p = list->next[0];
-    int ndom = hvcs->ndom;
 
-    while(p != list && (epoint == NULL || ndom > 0)){
-        if(isequal(point, p->x, d) && p->ndomr > epointndom){
-            epoint = p;
-            epointndom = p->ndomr;
+    for(dlnode_t * p = list->next[0]; p != list; p = p->next[0]){
+        if(isequal(point, p->x, d)){
+            p->enabled = 1;
+            return 1;
         }
-        p = p->next[0];
     }
 
-    if(epoint == NULL) return 0;
-
-    epoint->enabled = 1;
-    return 1;
+    return 0;
 }
 
 int findPointPos(hvc_s * hvcs, double * point){
-    dlnode_t * epoint = NULL;
-    int epointndom = -1;
-    int d = hvcs->d;
+    int pos = 0;
+    const int d = hvcs->d;
     dlnode_t * list = hvcs->list;
-    dlnode_t * p = list->next[0];
-    int ndom = hvcs->ndom;
-    int pos = -1, i = 0;
 
-    while(p != list && (epoint == NULL || ndom > 0)){
-        if(isequal(point, p->x, d) && p->ndomr > epointndom){
-            epoint = p;
-            epointndom = p->ndomr;
-            pos = i;
-        }
-        p = p->next[0];
-        ++i;
-    }
+    for(dlnode_t * p = list->next[0]; p != list; p = p->next[0], ++pos)
+        if(isequal(point, p->x, d))
+            return pos;
 
-    if(epoint == NULL) return -1;
-
-    return pos;
+    return -1;
 }
 
 void removeLeastContributor(hvc_s * hvcs, int updateContribs){
